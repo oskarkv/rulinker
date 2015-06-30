@@ -1,0 +1,1 @@
+java -cp target\rulinker-0.1.0-SNAPSHOT-standalone.jar clojure.main -e "(use 'rulinker.core) (-main)"
