@@ -46,7 +46,7 @@ russian word or phrase; english translation (or whatever really)
      You can also write it like this:
 
      ```
-    делать // сделать (p); to dо
+    делать // сделать; to dо
     ```
 
      The two slashes will also result in `(i) (p)` on the translation side.
