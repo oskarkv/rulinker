@@ -46,7 +46,17 @@
          (link (wiki-url word :en) "en")
          (link (wiki-url word) "ru"))))
 
-(defn process-line [line]
+(defmulti process-line (fn [line roots] roots))
+
+(defmethod process-line true [line _]
+  (println "LINE:" line)
+  (let [[russian translation] (str/split line #";\s*")
+        words (find-russian-words russian)
+        processed (map process-part words)]
+    (str russian ";" translation
+         "<br><br>" (str/join "<br>" processed))))
+
+(defmethod process-line false [line _]
   (println "LINE:" line)
   (let [[russian translation] (str/split line #";\s*")
         i (re-find #"\(i\)" russian)
@@ -58,16 +68,17 @@
     (str translation i p (when ds " (i) (p)") ";"
          russian "<br><br>" (str/join "<br><br>" processed))))
 
-(defn process-file [lines]
+(defn process-file [lines roots]
   (str/join "\n"
             (for [line lines :when (re-find #";" line)]
-              (process-line line))))
+              (process-line line roots))))
 
 (defn work []
   (let [infiles (file-seq (io/file indir))]
     (doseq [f infiles :when (-> f .getName (.endsWith ".txt"))]
       (let [output (process-file (with-open [r (io/reader f)]
-                                   (doall (shuffle (line-seq r)))))]
+                                   (doall (shuffle (line-seq r))))
+                                 (-> f .getName (= "roots.txt")))]
         (spit (str outdir (.getName f)) output)))))
 
 (defn -main [& args]
